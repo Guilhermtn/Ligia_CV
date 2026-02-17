@@ -20,6 +20,35 @@ O projeto está organizado da seguinte forma para facilitar a reprodutibilidade 
 
 ---
 
+## ⬇️ Obtendo o Projeto
+
+Antes de reproduzir os experimentos, é necessário obter o notebook disponibilizado neste repositório.
+
+### 1️⃣ Clonar o Repositório
+
+Você pode clonar o projeto utilizando:
+
+```bash
+git clone <LINK_DO_SEU_REPOSITORIO>
+```
+Ou, alternativamente:
+
+* Clique em Code → Download ZIP
+
+* Extraia os arquivos em seu computador
+
+### 2️⃣ Enviar o Notebook para o Google Drive
+
+Após obter o repositório:
+
+1. Acesse o Google Drive
+
+2. Crie uma pasta com o nome recomendado: `Ligia_compviz`
+
+3. Dentro dessa pasta, envie o arquivo:`competicao.ipynb`
+
+O notebook deve ficar no mesmo nível da pasta do dataset (conforme mostrado na estrutura da seção seguinte).
+
 ## ▶️ Reprodução dos Experimentos (Google Colab + Google Drive)
 
 O projeto foi estruturado para execução no Google Colab utilizando o Google Drive para armazenamento do dataset e geração dos resultados.
