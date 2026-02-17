@@ -10,9 +10,9 @@ O repositório contém os **artefatos finais do modelo** (`.pth`) e instruções
 
 O projeto está organizado da seguinte forma para facilitar a reprodutibilidade e a organização do pipeline de Visão Computacional:
 
-* **`Notebooks/`**: Notebook principal contendo toda a implementação da solução, incluindo preparação dos dados, definição do modelo, treinamento com validação cruzada (5-fold), avaliação, interpretabilidade com Grad-CAM e geração do arquivo de submissão.
+* **`notebooks/`**: Notebook principal contendo toda a implementação da solução, incluindo preparação dos dados, definição do modelo, treinamento com validação cruzada (5-fold), avaliação, interpretabilidade com Grad-CAM e geração do arquivo de submissão.
 
-* **`Model/`**: Contém os modelos treinados serializados (.pth), correspondentes aos pesos finais de cada fold utilizados para gerar as previsões finais.
+* **`models/`**: Contém os modelos treinados serializados (.pth), correspondentes aos pesos finais de cada fold utilizados para gerar as previsões finais.
 
 * **`ligia-compviz/`**: (não versionado): Pasta esperada para o dataset extraído, contendo imagens de treino/teste e arquivos CSV fornecidos pela competição.
 
