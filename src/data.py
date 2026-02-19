@@ -34,13 +34,6 @@ def sanity_check(data_dir: str | Path) -> None:
     # - dataset ainda zipado
     # - estrutura diferente do esperado
 
-    # Args:
-    #     data_dir: Diretório raiz do dataset (ligia-compviz/).
-
-    # Raises:
-    #     FileNotFoundError: Se a estrutura estiver incompleta.
-    
-    
     data_dir = Path(data_dir)
 
     expected = {
@@ -76,17 +69,6 @@ def load_train_df(data_dir: str | Path, seed: int = 42) -> pd.DataFrame:
     # Também criamos a coluna `path` com o caminho completo da imagem para uso
     # no DataLoader.
 
-    # Args:
-    #     data_dir: Diretório raiz do dataset (ligia-compviz/).
-    #     seed: Semente para embaralhamento (padrão: 42).
-
-    # Returns:
-    #     DataFrame com colunas 'id', 'label' e 'path'.
-
-    # Raises:
-    #     AssertionError: Se houver ids sem arquivo correspondente.
-    
-    
     data_dir = Path(data_dir)
 
     train_csv_path = data_dir / "train.csv"
@@ -134,15 +116,6 @@ def load_test_df(data_dir: str | Path) -> pd.DataFrame:
     # - associar cada `id` do `test.csv` ao respectivo arquivo na pasta test_images;
     # - garantir que os `ids` utilizados na submissão sigam exatamente o formato esperado.
 
-    # Args:
-    #     data_dir: Diretório raiz do dataset (ligia-compviz/).
-
-    # Returns:
-    #     DataFrame com colunas 'id' e 'path'.
-
-    # Raises:
-    #     AssertionError: Se houver ids sem arquivo correspondente.
-    
     data_dir = Path(data_dir)
 
     test_csv_path = data_dir / "test.csv"
@@ -172,16 +145,7 @@ def add_folds(df_train: pd.DataFrame, n_splits: int = 5, seed: int = 42) -> pd.D
 
     # Isso melhora a confiabilidade da validação e reduz variações artificiais
     # entre folds.
-
-    # Args:
-    #     df_train: DataFrame de treino com colunas 'path' e 'label'.
-    #     n_splits: Número de folds (padrão: 5).
-    #     seed: Semente para reprodutibilidade (padrão: 42).
-
-    # Returns:
-    #     DataFrame com coluna 'fold' adicionada.
-    
-        
+     
     df = df_train.copy()
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
 
@@ -260,18 +224,6 @@ def make_loaders(
     # Isso garante que:
     # - treino e validação são disjuntos
     # - a validação preserva a distribuição de classes (stratified)
-
-    # Args:
-    #     df_train: DataFrame de treino com coluna 'fold'.
-    #     train_tfms: Transformações para treino (com augmentation).
-    #     valid_tfms: Transformações para validação (sem augmentation).
-    #     fold: Índice do fold a ser usado como validação (padrão: 0).
-    #     batch_size: Tamanho do batch (padrão: 32).
-    #     num_workers: Número de workers para o DataLoader (padrão: 2).
-    #     pin_memory: Se True, usa pin_memory para GPU (padrão: True).
-
-    # Returns:
-    #     Tupla (train_loader, valid_loader).
     
     # Separa treino e validação
     df_tr = df_train[df_train["fold"] != fold].reset_index(drop=True)
@@ -317,9 +269,6 @@ def make_test_loader(
     #     num_workers: Número de workers para o DataLoader (padrão: 2).
     #     pin_memory: Se True, usa pin_memory para GPU (padrão: True).
 
-    # Returns:
-    #     DataLoader de teste.
-    
     test_dataset = XRayDataset(df_test, transform=valid_tfms, has_label=False)
     test_loader = DataLoader(
         test_dataset,
