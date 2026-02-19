@@ -2,7 +2,7 @@ numpy==2.0.2
 pandas==2.2.2
 matplotlib==3.10.0
 Pillow==11.3.0
-opencv-python==4.13.0
+opencv-python>=4.11,<4.14
 scikit-learn==1.6.1
 torch==2.9.0
 torchvision==0.24.0
