@@ -1,158 +1,237 @@
 # LIGIA - Visão Computacional  
 ## Detecção de Pneumonia em Raios-X de Tórax
 
-Implementação completa do pipeline de classificação binária (NORMAL vs PNEUMONIA) usando Transfer Learning, validação cruzada (5-fold), ensemble e interpretabilidade (Grad-CAM).  
+Implementação completa do pipeline de classificação binária (NORMAL vs PNEUMONIA) usando Transfer Learning com EfficientNet-B0, validação cruzada (5-fold) e ensemble.  
 O repositório contém os **artefatos finais do modelo** (`.pth`) e instruções para **reproduzir a geração do submission.csv**.
 
 ---
 
 ## 📁 Estrutura do Repositório
 
-O projeto está organizado da seguinte forma para facilitar a reprodutibilidade e a organização do pipeline de Visão Computacional:
-
-* **`notebooks/`**: Notebook principal contendo toda a implementação da solução, incluindo preparação dos dados, definição do modelo, treinamento com validação cruzada (5-fold), avaliação, interpretabilidade com Grad-CAM e geração do arquivo de submissão.
-
-* **`models/`**: Contém os modelos treinados serializados (.pth), correspondentes aos pesos finais de cada fold utilizados para gerar as previsões finais.
-
-* **`ligia-compviz/`**: (não versionado): Pasta esperada para o dataset extraído, contendo imagens de treino/teste e arquivos CSV fornecidos pela competição.
-
-* **`requirements.txt`**: Arquivo de configuração contendo as bibliotecas necessárias para execução do projeto.
+```
+Ligia_CV/
+├── src/                    # Código-fonte modularizado
+│   ├── cli.py              # Interface de linha de comando para inferência
+│   ├── data.py             # Dataset, DataLoaders e validação de estrutura
+│   ├── inference.py        # Funções de predição e ensemble
+│   ├── model.py            # Arquitetura do modelo (EfficientNet-B0)
+│   └── transforms.py       # Transformações de imagem (augmentation/normalização)
+├── models/                 # Checkpoints dos 5 folds treinados
+│   ├── best_model_fold0.pth
+│   ├── best_model_fold1.pth
+│   ├── best_model_fold2.pth
+│   ├── best_model_fold3.pth
+│   └── best_model_fold4.pth
+├── notebooks/              # Notebooks de desenvolvimento e competição
+│   ├── competicao.ipynb    # Notebook principal da competição
+│   └── train.ipynb         # Notebook de treinamento
+├── ligia-compviz/          # Dataset (não versionado)
+│   ├── train.csv
+│   ├── test.csv
+│   ├── train/train/
+│   │   ├── NORMAL/
+│   │   └── PNEUMONIA/
+│   └── test_images/test_images/
+├── requirements.txt        # Dependências do projeto
+└── README.md
+```
 
 ---
 
 ## ⬇️ Obtendo o Projeto
 
-Antes de reproduzir os experimentos, é necessário obter o notebook disponibilizado neste repositório.
-
 ### 1️⃣ Clonar o Repositório
-
-Você pode clonar o projeto utilizando:
 
 ```bash
 git clone <LINK_DO_SEU_REPOSITORIO>
+cd Ligia_CV
 ```
-Ou, alternativamente:
 
-* Clique em Code → Download ZIP
+### 2️⃣ Preparar o Dataset
 
-* Extraia os arquivos em seu computador
+Baixe o dataset da competição e extraia na pasta `ligia-compviz/` dentro do repositório, mantendo a estrutura esperada.
 
-### 2️⃣ Enviar o Notebook para o Google Drive
-
-Após obter o repositório:
-
-1. Acesse o Google Drive
-
-2. Crie uma pasta com o nome recomendado: `Ligia_compviz`
-
-3. Dentro dessa pasta, envie o arquivo:`competicao.ipynb`
-
-O notebook deve ficar no mesmo nível da pasta do dataset (conforme mostrado na estrutura da seção seguinte).
-
-## ▶️ Reprodução dos Experimentos (Google Colab + Google Drive)
-
-O projeto foi estruturado para execução no Google Colab utilizando o Google Drive para armazenamento do dataset e geração dos resultados.
-
-Esta é a forma recomendada para reprodução integral dos experimentos.
+⚠️ **Verificações importantes:**
+- O nome da pasta deve ser **exatamente** `ligia-compviz` (tudo minúsculo, com hífen)
+- Verifique se não há espaços ou caracteres invisíveis no nome da pasta
+- Certifique-se de que os arquivos dentro do dataset também não contêm espaços nos nomes
 
 ---
 
-### 1️⃣ Preparação do Dataset no Google Drive
+## 🐍 Configuração do Ambiente
 
-1. Faça o download do dataset da competição.
-2. Extraia o conteúdo.
-3. No Google Drive, crie a seguinte estrutura:
+### Requisitos
 
+⚠️ **Atenção:** Este projeto requer **Python 3.11**. As bibliotecas utilizadas (PyTorch, torchvision) podem não ter suporte para versões mais recentes como Python 3.13.
+
+### 1️⃣ Verificar a Versão do Python
+
+```bash
+python --version
 ```
-MyDrive/Ligia_compviz/
-├── competicao.ipynb
-├── ligia-compviz/
-│   ├── train.csv
-│   ├── test.csv
-│   ├── train/
-│   │   ├── NORMAL/
-│   │   └── PNEUMONIA/
-│   └── test_images/
-│       └── test_images/
+
+Se você possui múltiplas versões instaladas, especifique a versão correta nos comandos:
+
+```bash
+python3.11 --version
 ```
-Recomenda-se criar a pasta no Google Drive com o nome: Ligia_compviz
 
-Entretanto, caso utilize outro nome ou outro local no Drive, basta ajustar manualmente a variável no início do notebook:
+### 2️⃣ Criar o Ambiente Virtual
 
-```python
-PROJECT_DIR = "/content/drive/MyDrive/Ligia_compviz"  # ajuste para sua pasta
-DATA_DIR = f"{PROJECT_DIR}/ligia-compviz"
+```bash
+# Se python aponta para 3.11:
+python -m venv .venv
+
+# Ou, se precisar especificar a versão:
+python3.11 -m venv .venv
 ```
----
 
-### 2️⃣ Abrir o Notebook no Colab
+### 3️⃣ Ativar o Ambiente Virtual
 
-1. Acesse o Google Colab.
-2. Faça upload do arquivo:
-   notebooks/competicao.ipynb
-3. Ative GPU (opcional, mas recomendado):
-   Ambiente de execução → Alterar o tipo de Ambiente de Execução → GPU
-
-#### 🔧 Uso de GPU
-
-O projeto foi executado utilizando **Google Colab com GPU T4**.
-
-- ⏱ Tempo médio de execução completa: aproximadamente **20 minutos**
-- 💻 Em CPU, o tempo de execução pode aumentar consideravelmente
-- 🚀 O uso de GPU é fortemente recomendado para reduzir o tempo de treinamento
-
-Caso a execução seja realizada apenas em CPU, o pipeline continuará funcionando normalmente, porém com maior tempo de processamento.
-
----
-
-### 3️⃣ Montar o Google Drive
-
-Execute a célula inicial responsável por montar o Drive:
-
-```python
-from google.colab import drive
-drive.mount("/content/drive")
+**Linux/macOS:**
+```bash
+source .venv/bin/activate
 ```
-Ao executar essa célula:
 
-* Será solicitado que você autorize o acesso ao seu Google Drive
+**Windows:**
+```bash
+.\.venv\Scripts\activate
+```
 
-* Após a autorização, o notebook continuará a execução normalmente
+### 4️⃣ Instalar as Dependências
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-### 4️⃣ Execução do Notebook
+## ▶️ Execução do CLI
 
-Após montar o Drive, você pode:
+O CLI permite gerar o arquivo `submission.csv` diretamente pela linha de comando.
 
-Executar célula por célula, acompanhando cada etapa do pipeline
-ou
+### Uso Básico
 
-Executar tudo de uma vez em:
+```bash
+python -m src.cli --data-dir ./ligia-compviz --models-dir ./models
 ```
-Runtime → Run all
+
+### Uso Completo (com todas as opções)
+
+```bash
+python -m src.cli \
+    --data-dir ./ligia-compviz \
+    --models-dir ./models \
+    --output submission.csv \
+    --batch-size 32 \
+    --num-folds 5 \
+    --device cuda
 ```
-⚠️ Recomendação:
-Caso opte por executar tudo de uma vez, recomenda-se que a sessão esteja limpa para evitar conflitos ou variáveis previamente carregadas.
-Para garantir isso:
+
+### Parâmetros Disponíveis
+
+| Parâmetro | Descrição | Default |
+|-----------|-----------|---------|
+| `--data-dir` | Diretório raiz do dataset | *obrigatório* |
+| `--models-dir` | Diretório com os checkpoints (.pth) | *obrigatório* |
+| `--output` | Caminho do arquivo de saída | `submission.csv` |
+| `--batch-size` | Tamanho do batch para inferência | `32` |
+| `--num-folds` | Número de folds para ensemble | `5` |
+| `--num-workers` | Workers do DataLoader | `2` |
+| `--device` | Dispositivo (cuda/cpu) | auto-detecta |
+| `--img-size` | Tamanho da imagem de entrada | `224` |
+
+### Exemplo de Saída
+
 ```
-Runtime → Restart and run all
+============================================================
+Geração de Submission - Classificação de Pneumonia
+============================================================
+Data dir:    /home/user/Ligia_CV/ligia-compviz
+Models dir:  /home/user/Ligia_CV/models
+Output:      /home/user/Ligia_CV/submission.csv
+Batch size:  32
+Num folds:   5
+Image size:  224
+Device:      cuda
+============================================================
+
+[1/4] Verificando checkpoints...
+✅ 5 checkpoints encontrados
+
+[2/4] Carregando dataset de teste...
+✅ X amostras de teste carregadas
+
+[3/4] Preparando DataLoader...
+✅ DataLoader pronto (Y batches)
+
+[4/4] Rodando inferência (ensemble de 5 folds)...
+✅ Inferência concluída (X predições)
+
+============================================================
+Salvando submissão...
+
+============================================================
+✅ Processo concluído com sucesso!
+Arquivo salvo em: /home/user/Ligia_CV/submission.csv
+============================================================
 ```
-Isso assegura que o experimento será reproduzido do zero.
 
 ---
 
-### 5️⃣ Geração do Arquivo de Submissão
+## 🔧 Uso de GPU
 
-Ao final da execução completa do notebook, será gerado automaticamente o arquivo:
-```
-submission.csv
-```
-O arquivo será salvo em dois locais:
+O uso de GPU é recomendado para acelerar a inferência:
+- O CLI detecta automaticamente a disponibilidade de CUDA
+- Para forçar CPU: `--device cpu`
+- Para forçar GPU: `--device cuda`
 
-* **`/content/submission.csv`**(diretório temporário do ambiente Colab)
+---
 
-* Dentro da pasta definida em PROJECT_DIR no Google Drive
+## 🏋️ Treinamento dos Modelos (Opcional - Google Colab)
 
-O arquivo salvo corresponde exatamente ao utilizado para submissão na competição.
+Os checkpoints (`.pth`) já estão incluídos no repositório. Esta seção é **opcional** e serve apenas para quem deseja **retreinar os modelos do zero** para verificação.
+
+⚠️ **Atenção:** O notebook `train.ipynb` foi desenvolvido para execução no **Google Colab com GPU**. Localmente, sem GPU, o treinamento pode ser extremamente lento.
+
+### Configuração no Google Colab
+
+1. **Criar uma pasta no Google Drive:**
+   - Acesse seu Google Drive e crie uma pasta (ex: `ligia-cv`)
+   - Recomendação: use nome **minúsculo** e **sem espaços**
+   - Verifique se não existe outra pasta com o mesmo nome em `MyDrive/`
+
+2. **Copiar os arquivos necessários:**
+   - Copie o arquivo `notebooks/train.ipynb` para a pasta criada
+   - Copie a pasta `ligia-compviz/` (dataset) para o **mesmo nível** da pasta
+   
+   Estrutura esperada:
+   ```
+   MyDrive/
+   └── ligia-cv/              # sua pasta
+       ├── train.ipynb        # notebook de treinamento
+       └── ligia-compviz/     # dataset
+           ├── train.csv
+           ├── test.csv
+           ├── train/
+           └── test_images/
+   ```
+
+3. **Ajustar o caminho no notebook:**
+   - Abra o `train.ipynb` no Colab
+   - Na seção **0.5.2**, ajuste a variável `PROJECT_DIR` para o nome da sua pasta:
+   ```python
+   PROJECT_DIR = "/content/drive/MyDrive/ligia-cv"  # <- ajuste para sua pasta
+   ```
+
+4. **Habilitar GPU:**
+   - No Colab: `Ambiente de execução` → `Alterar tipo de ambiente de execução` → `GPU T4`
+
+5. **Executar o notebook:**
+   - Execute todas as células sequencialmente
+   - Os checkpoints serão salvos automaticamente na pasta do Colab
+
+### Tempo de Execução
+
+Com a GPU T4 gratuita do Google Colab, o treinamento completo (5 folds) leva aproximadamente **23 minutos**.
 
